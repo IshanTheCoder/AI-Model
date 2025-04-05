@@ -45,11 +45,11 @@ async function init() {
 }
 
 async function loop() {
-  // Update the webcam frame
-  webcam.update();
-
-  // Make predictions
-  await predict();
+  // Update the webcam frame only if the webcam is playing
+  if (webcam && webcam.playing) {
+    webcam.update();
+    await predict();  // Make predictions based on webcam frame
+  }
 
   // Keep the loop going
   window.requestAnimationFrame(loop);
@@ -74,6 +74,9 @@ async function predict() {
 }
 
 async function takePicture() {
+  // Stop the webcam feed once the picture is taken
+  webcam.playing = false;
+
   // Capture the current frame from the webcam into a canvas
   const snapshotCanvas = document.createElement("canvas");
   snapshotCanvas.width = webcam.canvas.width;
