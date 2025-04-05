@@ -13,26 +13,35 @@ async function init() {
   webcam = new tmImage.Webcam(200, 200, flip);
   await webcam.setup();
   await webcam.play();
-  window.requestAnimationFrame(loop);
 
   document.getElementById("webcam-container").appendChild(webcam.canvas);
   labelContainer = document.getElementById("label-container");
-  for (let i = 0; i < maxPredictions; i++) {
-    labelContainer.appendChild(document.createElement("div"));
-  }
 }
 
-async function loop() {
-  webcam.update();
-  await predict();
-  window.requestAnimationFrame(loop);
-}
+async function takePicture() {
+  // Capture current webcam frame into a canvas
+  const snapshotCanvas = document.createElement("canvas");
+  snapshotCanvas.width = webcam.canvas.width;
+  snapshotCanvas.height = webcam.canvas.height;
+  const context = snapshotCanvas.getContext("2d");
+  context.drawImage(webcam.canvas, 0, 0);
 
-async function predict() {
-  const prediction = await model.predict(webcam.canvas);
-  for (let i = 0; i < maxPredictions; i++) {
-    const classPrediction =
-      prediction[i].className + ": " + prediction[i].probability.toFixed(2);
-    labelContainer.childNodes[i].innerHTML = classPrediction;
-  }
+  // Display snapshot image
+  const imgElement = document.getElementById("snapshot");
+  imgElement.src = snapshotCanvas.toDataURL("image/png");
+  imgElement.style.display = "block";
+
+  // Get predictions and display top 3
+  const prediction = await model.predict(snapshotCanvas);
+  const top3 = prediction
+    .sort((a, b) => b.probability - a.probability)
+    .slice(0, 3);
+
+  labelContainer.innerHTML = "";
+  top3.forEach(p => {
+    const label = `${p.className}: ${(p.probability * 100).toFixed(2)}%`;
+    const div = document.createElement("div");
+    div.textContent = label;
+    labelContainer.appendChild(div);
+  });
 }
