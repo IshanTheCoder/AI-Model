@@ -1,9 +1,9 @@
 body {
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  background: #f5f5f5;
+  background-color: #f4f4f9;
+  color: #333;
   text-align: center;
   padding: 2rem;
-  color: #333;
 }
 
 h1 {
@@ -12,8 +12,8 @@ h1 {
 }
 
 p {
-  margin-bottom: 2rem;
   color: #555;
+  margin-bottom: 1.5rem;
 }
 
 .model-section {
@@ -23,12 +23,13 @@ p {
 }
 
 button {
+  margin: 0.5rem;
   padding: 10px 20px;
+  font-size: 1rem;
   background-color: #007bfc;
   color: white;
   border: none;
-  border-radius: 10px;
-  font-size: 1rem;
+  border-radius: 8px;
   cursor: pointer;
   transition: background-color 0.3s;
 }
@@ -38,9 +39,17 @@ button:hover {
 }
 
 #webcam-container canvas {
+  margin-top: 1rem;
   border: 2px solid #ccc;
-  border-radius: 10px;
-  margin-top: 20px;
+  border-radius: 8px;
+}
+
+#snapshot {
+  margin-top: 1rem;
+  max-width: 200px;
+  border: 2px solid #aaa;
+  border-radius: 8px;
+  display: none;
 }
 
 #label-container {
@@ -48,8 +57,7 @@ button:hover {
 }
 
 #label-container div {
-  margin-top: 0.5rem;
+  margin: 5px 0;
   font-size: 1.2rem;
   font-weight: bold;
 }
-
