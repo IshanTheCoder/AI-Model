@@ -39,9 +39,11 @@ button:hover {
 }
 
 #webcam-container canvas {
-  margin-top: 1rem;
-  border: 2px solid #ccc;
-  border-radius: 8px;
+  border: 2px solid #4caf50;
+  border-radius: 10px;
+  margin: 10px 0;
+  width: 200px;
+  height: 200px;
 }
 
 #snapshot {
