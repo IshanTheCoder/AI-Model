@@ -43,16 +43,19 @@ function handleUpload(event) {
     img.src = URL.createObjectURL(file);
 
     img.onload = async function() {
+      // Once the image is loaded, draw it on the canvas
       const snapshotCanvas = document.createElement("canvas");
       snapshotCanvas.width = img.width;
       snapshotCanvas.height = img.height;
       const context = snapshotCanvas.getContext("2d");
       context.drawImage(img, 0, 0);
 
+      // Display the image in the snapshot element
       const imgElement = document.getElementById("snapshot");
       imgElement.src = snapshotCanvas.toDataURL("image/png");
       imgElement.style.display = "block";
 
+      // Get prediction for the uploaded image
       await getPrediction(snapshotCanvas);
     }
   }
@@ -61,7 +64,7 @@ function handleUpload(event) {
 // Get predictions from the model and display the top 3
 async function getPrediction(canvas) {
   const prediction = await model.predict(canvas);
-  
+
   // Sort the predictions by probability and keep the top 3
   const top3 = prediction
     .sort((a, b) => b.probability - a.probability)
