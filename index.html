@@ -1,30 +1,26 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>What Breed Is Your Dog?</title>
-  <link rel="stylesheet" href="style.css" />
-</head>
-<body>
-  <h1>What Breed Is Your Dog?</h1>
-  <p>Click "Start Webcam" to begin, then "Take Picture" to analyze one frame. Or just upload a file!</p>
-
-  <div class="model-section">
-    <button onclick="init()">Start Webcam</button>
-    <button onclick="takePicture()">Take Picture</button>
-
-    <label for="image-upload" class="upload-btn">Upload a Dog Picture</label>
-    <input type="file" id="image-upload" accept="image/*" onchange="handleUpload(event)" style="display:none;">
-    
-    <div id="webcam-container"></div>
-    <img id="snapshot" />
-    <div id="label-container"></div>
-  </div>
-  <p>Powered by GitHub and Teachable Machine!</p>
-  <!-- Load TensorFlow.js and Teachable Machine -->
-  <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@latest/dist/tf.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/@teachablemachine/image@latest/dist/teachablemachine-image.min.js"></script>
-  <script src="script.js"></script>
-</body>
-</html>
+ <html lang="en">
+ <head>
+   <meta charset="UTF-8" />
+   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+   <title>What Breed Is Your Dog?</title>
+   <link rel="stylesheet" href="style.css" />
+ </head>
+ <body>
+   <h1>What Breed Is Your Dog?</h1>
+   <p>Click "Start Webcam" to begin, then "Take Picture" to analyze one frame.</p>
+ 
+   <div class="model-section">
+     <button onclick="init()">Start Webcam</button>
+     <button onclick="takePicture()">Take Picture</button>
+     <div id="webcam-container"></div>
+     <img id="snapshot" />
+     <div id="label-container"></div>
+   </div>
+ 
+   <!-- Load TensorFlow.js and Teachable Machine -->
+   <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@latest/dist/tf.min.js"></script>
+   <script src="https://cdn.jsdelivr.net/npm/@teachablemachine/image@latest/dist/teachablemachine-image.min.js"></script>
+   <script src="script.js"></script>
+ </body>
+ </html>
