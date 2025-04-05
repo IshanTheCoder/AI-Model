@@ -2,6 +2,11 @@ const URL = "https://teachablemachine.withgoogle.com/models/Ur8KUWNUn/";
 
 let model, webcam, labelContainer, maxPredictions;
 
+async function loop() {
+  webcam.update(); // updates the webcam frame
+  window.requestAnimationFrame(loop); // keeps the loop running
+}
+
 async function init() {
   console.log("Initializing webcam...");
   const modelURL = URL + "model.json";
@@ -31,10 +36,6 @@ async function init() {
 }
 
 // Loop to refresh webcam frames
-async function loop() {
-  webcam.update(); // updates the webcam frame
-  window.requestAnimationFrame(loop); // keeps the loop running
-}
 
 
 async function takePicture() {
