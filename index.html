@@ -13,6 +13,7 @@
   <div class="model-section">
     <button onclick="init()">Start Webcam</button>
     <button onclick="takePicture()">Take Picture</button>
+    <input type="file" id="image-upload" accept="image/*" onchange="handleUpload(event)">
     <div id="webcam-container"></div>
     <img id="snapshot" />
     <div id="label-container"></div>
