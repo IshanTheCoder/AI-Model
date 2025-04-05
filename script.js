@@ -87,22 +87,27 @@ async function takePicture() {
 
 async function handleUpload(event) {
   const file = event.target.files[0];
-  if (!file || !model) return;
+  if (!file || !model) {
+    console.error("No file selected or model not loaded");
+    return;
+  }
 
+  // Load the image into an HTMLImageElement
   const img = new Image();
   img.onload = async () => {
+    // Resize image to match the model's expected input size
     const snapshotCanvas = document.createElement("canvas");
     snapshotCanvas.width = 200;
     snapshotCanvas.height = 200;
     const ctx = snapshotCanvas.getContext("2d");
     ctx.drawImage(img, 0, 0, snapshotCanvas.width, snapshotCanvas.height);
 
+    // Display the image on the page
     const imgElement = document.getElementById("snapshot");
     imgElement.src = snapshotCanvas.toDataURL("image/png");
     imgElement.style.display = "block";
 
-    predictionLoopRunning = false;
-
+    // Run predictions on the uploaded image
     const prediction = await model.predict(snapshotCanvas);
     const filtered = prediction
       .filter(p => p.probability >= 0.05)
@@ -122,6 +127,7 @@ async function handleUpload(event) {
     }
   };
 
+  // Read the file as Data URL
   const reader = new FileReader();
   reader.onload = () => {
     img.src = reader.result;
