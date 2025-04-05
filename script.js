@@ -1,6 +1,7 @@
 const URL = "https://teachablemachine.withgoogle.com/models/Ur8KUWNUn/";
 
 let model, webcam, labelContainer, maxPredictions;
+let isLive = false;
 let loopId = null;
 
 async function init() {
@@ -15,22 +16,23 @@ async function init() {
   await webcam.setup();
   await webcam.play();
 
+  // Reset UI
+  document.getElementById("webcam-container").innerHTML = "";
   document.getElementById("webcam-container").appendChild(webcam.canvas);
-
+  document.getElementById("snapshot").style.display = "none";
   labelContainer = document.getElementById("label-container");
   labelContainer.innerHTML = "";
-  for (let i = 0; i < maxPredictions; i++) {
-    labelContainer.appendChild(document.createElement("div"));
-  }
 
-  // Start loop and save the ID so we can stop it
-  loopId = requestAnimationFrame(loop);
+  // Start loop
+  isLive = true;
+  loop();
 }
 
 async function loop() {
+  if (!isLive) return;
   webcam.update();
   await predictLive();
-  loopId = requestAnimationFrame(loop); // keep looping
+  loopId = requestAnimationFrame(loop);
 }
 
 async function predictLive() {
@@ -49,30 +51,31 @@ async function predictLive() {
 }
 
 async function takePicture() {
-  // Stop live loop
+  // Stop prediction loop
+  isLive = false;
   if (loopId) {
     cancelAnimationFrame(loopId);
     loopId = null;
   }
 
-  // Stop webcam feed
+  // Stop webcam
   if (webcam && webcam.stop) {
     webcam.stop();
   }
 
-  // Take snapshot from webcam canvas
+  // Take snapshot
   const snapshotCanvas = document.createElement("canvas");
   snapshotCanvas.width = webcam.canvas.width;
   snapshotCanvas.height = webcam.canvas.height;
   const ctx = snapshotCanvas.getContext("2d");
   ctx.drawImage(webcam.canvas, 0, 0);
 
-  // Show snapshot image
+  // Show image
   const img = document.getElementById("snapshot");
   img.src = snapshotCanvas.toDataURL("image/png");
   img.style.display = "block";
 
-  // Predict from snapshot
+  // Predict from the snapshot
   const prediction = await model.predict(snapshotCanvas);
   const top3 = prediction
     .sort((a, b) => b.probability - a.probability)
