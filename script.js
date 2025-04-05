@@ -1,51 +1,39 @@
 const URL = "https://teachablemachine.withgoogle.com/models/Ur8KUWNUn/";
 
 let model, webcam, labelContainer, maxPredictions;
-let isPredicting = true; // control prediction loop
+let loopId = null;
 
 async function init() {
   const modelURL = URL + "model.json";
   const metadataURL = URL + "metadata.json";
 
-  try {
-    model = await tmImage.load(modelURL, metadataURL);
-    maxPredictions = model.getTotalClasses();
-  } catch (error) {
-    console.error("Model load error:", error);
-    return;
-  }
+  model = await tmImage.load(modelURL, metadataURL);
+  maxPredictions = model.getTotalClasses();
 
   const flip = true;
   webcam = new tmImage.Webcam(200, 200, flip);
-
-  try {
-    await webcam.setup();
-    await webcam.play();
-  } catch (err) {
-    alert("Camera permission denied or unavailable.");
-    return;
-  }
+  await webcam.setup();
+  await webcam.play();
 
   document.getElementById("webcam-container").appendChild(webcam.canvas);
-  labelContainer = document.getElementById("label-container");
 
+  labelContainer = document.getElementById("label-container");
+  labelContainer.innerHTML = "";
   for (let i = 0; i < maxPredictions; i++) {
     labelContainer.appendChild(document.createElement("div"));
   }
 
-  isPredicting = true;
-  window.requestAnimationFrame(loop);
+  // Start loop and save the ID so we can stop it
+  loopId = requestAnimationFrame(loop);
 }
 
 async function loop() {
-  if (isPredicting) {
-    webcam.update();
-    await predict();
-    window.requestAnimationFrame(loop);
-  }
+  webcam.update();
+  await predictLive();
+  loopId = requestAnimationFrame(loop); // keep looping
 }
 
-async function predict() {
+async function predictLive() {
   const prediction = await model.predict(webcam.canvas);
   const top3 = prediction
     .sort((a, b) => b.probability - a.probability)
@@ -61,21 +49,30 @@ async function predict() {
 }
 
 async function takePicture() {
-  // Stop predictions
-  isPredicting = false;
+  // Stop live loop
+  if (loopId) {
+    cancelAnimationFrame(loopId);
+    loopId = null;
+  }
 
-  // Take snapshot
+  // Stop webcam feed
+  if (webcam && webcam.stop) {
+    webcam.stop();
+  }
+
+  // Take snapshot from webcam canvas
   const snapshotCanvas = document.createElement("canvas");
   snapshotCanvas.width = webcam.canvas.width;
   snapshotCanvas.height = webcam.canvas.height;
-  const context = snapshotCanvas.getContext("2d");
-  context.drawImage(webcam.canvas, 0, 0);
+  const ctx = snapshotCanvas.getContext("2d");
+  ctx.drawImage(webcam.canvas, 0, 0);
 
-  const imgElement = document.getElementById("snapshot");
-  imgElement.src = snapshotCanvas.toDataURL("image/png");
-  imgElement.style.display = "block";
+  // Show snapshot image
+  const img = document.getElementById("snapshot");
+  img.src = snapshotCanvas.toDataURL("image/png");
+  img.style.display = "block";
 
-  // Predict once on the snapshot
+  // Predict from snapshot
   const prediction = await model.predict(snapshotCanvas);
   const top3 = prediction
     .sort((a, b) => b.probability - a.probability)
