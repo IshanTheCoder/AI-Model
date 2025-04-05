@@ -3,27 +3,37 @@ const URL = "https://teachablemachine.withgoogle.com/models/Ur8KUWNUn/";
 let model, webcam, labelContainer, maxPredictions;
 
 async function init() {
+  console.log("Initializing webcam...");
   const modelURL = URL + "model.json";
   const metadataURL = URL + "metadata.json";
 
   model = await tmImage.load(modelURL, metadataURL);
+  console.log("Model loaded.");
   maxPredictions = model.getTotalClasses();
 
   const flip = true;
   webcam = new tmImage.Webcam(200, 200, flip);
-  await webcam.setup();
-  await webcam.play();
-console.log("Webcam video started:", webcam.canvas);
 
-  document.getElementById("webcam-container").appendChild(webcam.canvas);
-  labelContainer = document.getElementById("label-container");
-  window.requestAnimationFrame(loop);
+  try {
+    await webcam.setup();
+    await webcam.play();
+    console.log("Webcam started:", webcam.canvas);
+
+    document.getElementById("webcam-container").appendChild(webcam.canvas);
+    console.log("Canvas added to DOM.");
+
+    labelContainer = document.getElementById("label-container");
+    window.requestAnimationFrame(loop);
+  } catch (err) {
+    console.error("Webcam error:", err);
+    alert("⚠️ Please allow camera access or try a different device.");
+  }
 }
 
 // Loop to refresh webcam frames
 async function loop() {
-  webcam.update(); // update the webcam frame
-  window.requestAnimationFrame(loop);
+  webcam.update(); // updates the webcam frame
+  window.requestAnimationFrame(loop); // keeps the loop running
 }
 
 
