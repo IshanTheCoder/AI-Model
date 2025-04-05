@@ -13,6 +13,7 @@ async function init() {
   webcam = new tmImage.Webcam(200, 200, flip);
   await webcam.setup();
   await webcam.play();
+console.log("Webcam video started:", webcam.canvas);
 
   document.getElementById("webcam-container").appendChild(webcam.canvas);
   labelContainer = document.getElementById("label-container");
