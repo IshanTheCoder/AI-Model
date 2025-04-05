@@ -38,8 +38,10 @@ async function loop() {
 async function predictLive() {
   const prediction = await model.predict(webcam.canvas);
   const top3 = prediction
-    .sort((a, b) => b.probability - a.probability)
-    .slice(0, 3);
+  .filter(p => p.probability >= 0.05) // only show predictions >= 5%
+  .sort((a, b) => b.probability - a.probability)
+  .slice(0, 3); // still limit to top 3
+
 
   labelContainer.innerHTML = "";
   top3.forEach(p => {
