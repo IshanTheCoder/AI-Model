@@ -55,6 +55,25 @@ async function loop() {
   window.requestAnimationFrame(loop);
 }
 
+async function predict() {
+  // Get predictions from the model for the current webcam frame
+  const prediction = await model.predict(webcam.canvas);
+
+  // Sort predictions by probability (descending order) and display top 3
+  const top3 = prediction
+    .sort((a, b) => b.probability - a.probability)
+    .slice(0, 3);
+
+  labelContainer.innerHTML = "";
+  top3.forEach(p => {
+    const label = `${p.className}: ${(p.probability * 100).toFixed(2)}%`;
+    const div = document.createElement("div");
+    div.textContent = label;
+    labelContainer.appendChild(div);
+  });
+}
+
+
 async function takePicture() {
   // Stop the webcam feed once the picture is taken
   webcam.playing = false;
@@ -86,20 +105,3 @@ async function takePicture() {
   });
 }
 
-async function predict() {
-  // Get predictions from the model for the current webcam frame
-  const prediction = await model.predict(webcam.canvas);
-
-  // Sort predictions by probability (descending order) and display top 3
-  const top3 = prediction
-    .sort((a, b) => b.probability - a.probability)
-    .slice(0, 3);
-
-  labelContainer.innerHTML = "";
-  top3.forEach(p => {
-    const label = `${p.className}: ${(p.probability * 100).toFixed(2)}%`;
-    const div = document.createElement("div");
-    div.textContent = label;
-    labelContainer.appendChild(div);
-  });
-}
