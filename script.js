@@ -48,22 +48,24 @@ async function predictLive() {
 }
 
 async function takePicture() {
-  // Stop live prediction loop
-  predictionLoopRunning = false;
+  if (!webcam || !model) return;
 
-  // Capture frame to canvas
+  // Capture current webcam frame into a canvas
   const snapshotCanvas = document.createElement("canvas");
   snapshotCanvas.width = webcam.canvas.width;
   snapshotCanvas.height = webcam.canvas.height;
   const context = snapshotCanvas.getContext("2d");
   context.drawImage(webcam.canvas, 0, 0);
 
-  // Show image
+  // Display snapshot image
   const imgElement = document.getElementById("snapshot");
   imgElement.src = snapshotCanvas.toDataURL("image/png");
   imgElement.style.display = "block";
 
-  // Get prediction from captured frame
+  // Stop updating predictions from the live feed
+  predictionLoopRunning = false;
+
+  // Run prediction just on this frame
   const prediction = await model.predict(snapshotCanvas);
   const filtered = prediction
     .filter(p => p.probability >= 0.05)
@@ -71,10 +73,14 @@ async function takePicture() {
     .slice(0, 3);
 
   labelContainer.innerHTML = "";
-  filtered.forEach(p => {
-    const label = `${p.className}: ${(p.probability * 100).toFixed(2)}%`;
-    const div = document.createElement("div");
-    div.textContent = label;
-    labelContainer.appendChild(div);
-  });
+  if (filtered.length === 0) {
+    labelContainer.innerHTML = "No confident predictions (above 5%).";
+  } else {
+    filtered.forEach(p => {
+      const label = `${p.className}: ${(p.probability * 100).toFixed(2)}%`;
+      const div = document.createElement("div");
+      div.textContent = label;
+      labelContainer.appendChild(div);
+    });
+  }
 }
