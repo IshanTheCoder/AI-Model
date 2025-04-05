@@ -84,3 +84,47 @@ async function takePicture() {
     });
   }
 }
+
+async function handleUpload(event) {
+  const file = event.target.files[0];
+  if (!file || !model) return;
+
+  const img = new Image();
+  img.onload = async () => {
+    const snapshotCanvas = document.createElement("canvas");
+    snapshotCanvas.width = 200;
+    snapshotCanvas.height = 200;
+    const ctx = snapshotCanvas.getContext("2d");
+    ctx.drawImage(img, 0, 0, snapshotCanvas.width, snapshotCanvas.height);
+
+    const imgElement = document.getElementById("snapshot");
+    imgElement.src = snapshotCanvas.toDataURL("image/png");
+    imgElement.style.display = "block";
+
+    predictionLoopRunning = false;
+
+    const prediction = await model.predict(snapshotCanvas);
+    const filtered = prediction
+      .filter(p => p.probability >= 0.05)
+      .sort((a, b) => b.probability - a.probability)
+      .slice(0, 3);
+
+    labelContainer.innerHTML = "";
+    if (filtered.length === 0) {
+      labelContainer.innerHTML = "No confident predictions (above 5%).";
+    } else {
+      filtered.forEach(p => {
+        const label = `${p.className}: ${(p.probability * 100).toFixed(2)}%`;
+        const div = document.createElement("div");
+        div.textContent = label;
+        labelContainer.appendChild(div);
+      });
+    }
+  };
+
+  const reader = new FileReader();
+  reader.onload = () => {
+    img.src = reader.result;
+  };
+  reader.readAsDataURL(file);
+}
