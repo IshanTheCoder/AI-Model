@@ -17,7 +17,15 @@ console.log("Webcam video started:", webcam.canvas);
 
   document.getElementById("webcam-container").appendChild(webcam.canvas);
   labelContainer = document.getElementById("label-container");
+  window.requestAnimationFrame(loop);
 }
+
+// Loop to refresh webcam frames
+async function loop() {
+  webcam.update(); // update the webcam frame
+  window.requestAnimationFrame(loop);
+}
+
 
 async function takePicture() {
   // Capture current webcam frame into a canvas
@@ -44,5 +52,6 @@ async function takePicture() {
     const div = document.createElement("div");
     div.textContent = label;
     labelContainer.appendChild(div);
-  });
+  }
+              );
 }
