@@ -37,11 +37,8 @@ async function loop() {
 
 async function predictLive() {
   const prediction = await model.predict(webcam.canvas);
-  const top3 = prediction
-  .filter(p => p.probability >= 0.05) // only show predictions >= 5%
-  .sort((a, b) => b.probability - a.probability)
-  .slice(0, 3); // still limit to top 3
-
+  const filtered = prediction.filter(p => p.probability >= 0.05);
+  const top3 = filtered.sort((a, b) => b.probability - a.probability).slice(0, 3);
 
   labelContainer.innerHTML = "";
   top3.forEach(p => {
@@ -53,36 +50,21 @@ async function predictLive() {
 }
 
 async function takePicture() {
-  // Stop prediction loop
-  isLive = false;
-  if (loopId) {
-    cancelAnimationFrame(loopId);
-    loopId = null;
-  }
+  stopPredictionLoop(); // stop live predictions
 
-  // Stop webcam
-  if (webcam && webcam.stop) {
-    webcam.stop();
-  }
-
-  // Take snapshot
   const snapshotCanvas = document.createElement("canvas");
   snapshotCanvas.width = webcam.canvas.width;
   snapshotCanvas.height = webcam.canvas.height;
-  const ctx = snapshotCanvas.getContext("2d");
-  ctx.drawImage(webcam.canvas, 0, 0);
+  const context = snapshotCanvas.getContext("2d");
+  context.drawImage(webcam.canvas, 0, 0);
 
-  // Show image
-  const img = document.getElementById("snapshot");
-  img.src = snapshotCanvas.toDataURL("image/png");
-  img.style.display = "block";
+  const imgElement = document.getElementById("snapshot");
+  imgElement.src = snapshotCanvas.toDataURL("image/png");
+  imgElement.style.display = "block";
 
-  // Predict from the snapshot
   const prediction = await model.predict(snapshotCanvas);
-  const top3 = prediction
-  .filter(p => p.probability >= 0.05) // only show predictions >= 5%
-  .sort((a, b) => b.probability - a.probability)
-  .slice(0, 3); // still limit to top 3
+  const filtered = prediction.filter(p => p.probability >= 0.05);
+  const top3 = filtered.sort((a, b) => b.probability - a.probability).slice(0, 3);
 
   labelContainer.innerHTML = "";
   top3.forEach(p => {
