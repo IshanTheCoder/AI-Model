@@ -83,3 +83,27 @@ input[type="file"]:hover {
   font-size: 1.2rem;
   font-weight: bold;
 }
+
+.upload-btn {
+  margin-top: 10px;
+  padding: 12px 25px;
+  font-size: 1.2rem;
+  background-color: #4caf50;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+  width: 200px;
+  text-align: center;
+}
+
+.upload-btn:hover {
+  background-color: #45a049;
+}
+
+/* Hide the actual file input */
+#image-upload {
+  display: none;
+}
+
