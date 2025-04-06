@@ -83,4 +83,19 @@ const URL = "https://teachablemachine.withgoogle.com/models/Ur8KUWNUn/";
        labelContainer.appendChild(div);
      });
    }
+   document.getElementById("reset-button").style.display = "inline-block";
  }
+
+function resetApp() {
+  // Hide snapshot and reset src
+  const imgElement = document.getElementById("snapshot");
+  imgElement.src = "";
+  imgElement.style.display = "none";
+
+  // Clear predictions
+  labelContainer.innerHTML = "";
+
+  // Hide reset button
+  document.getElementById("reset-button").style.display = "none";
+}
+
